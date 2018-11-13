@@ -28,7 +28,7 @@ class CreateUsersTable extends Migration
 	        $table->string('last_name')->nullable();
 	        $table->string('slug');
             $table->string('email')->unique();
-            $table->string('password')->nullable();
+            $table->string('password')->nullable();// es nullable para que se pueda dar de alta desde una red social. Sino NO
 	        $table->string('picture')->nullable();
 
 	        //cashier columns
