@@ -101,5 +101,16 @@ class Course extends Model
 	{
 		return $this->belongsTo(Teacher::class);
 	}
+
+	// puedo usar este o. Ver como cambia en rating.blade.php
+	public function getRatingAttribute()
+	{
+		return $this->reviews->avg('rating');
+	}
+	// este. Ver como cambia en rating.blade.php
+	public function getCustomRatingAttribute()
+	{
+		return $this->reviews->avg('rating');
+	}
 }
 
