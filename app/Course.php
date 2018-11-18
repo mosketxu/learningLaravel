@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * App\Course
@@ -37,38 +38,67 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereTeacherId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Course whereUpdatedAt($value)
  */
+
 class Course extends Model
 {
-    const PUBLISHED = 1;
+	use SoftDeletes;
+
+	protected $fillable = ['teacher_id', 'name', 'description', 'picture', 'level_id', 'category_id', 'status'];
+
+	const PUBLISHED = 1;
 	const PENDING = 2;
 	const REJECTED = 3;
-	
-	public function category () {
+
+	protected $withCount = ['reviews', 'students'];
+
+	public static function boot()
+	{
+		parent::boot();
+
+		static::saving(function (Course $course) {
+			if (!\App::runningInConsole()) {
+				$course->slug = str_slug($course->name, "-");
+			}
+		});
+	}
+
+	public function pathAttachment()
+	{
+		return "/images/courses/" . $this->picture;
+	}
+
+	public function category()
+	{
 		return $this->belongsTo(Category::class)->select('id', 'name');
 	}
-	public function goals () {
+	public function goals()
+	{
 		return $this->hasMany(Goal::class)->select('id', 'course_id', 'goal');
 		//si hay claves foraneas tenggo que ponerlas, sino no funciona. POr eso pongo el course_id
 	}
-	public function level () {
+	public function level()
+	{
 		return $this->belongsTo(Level::class)->select('id', 'name');
 	}
 
-	public function reviews () {
+	public function reviews()
+	{
 		return $this->hasMany(Review::class)->select('id', 'user_id', 'course_id', 'rating', 'comment', 'created_at');
 	}
-
-	public function requirements () {
+	public function requirements()
+	{
 		return $this->hasMany(Requirement::class)->select('id', 'course_id', 'requirement');
 	}
 
-	public function students () {
+	public function students()
+	{
 		return $this->belongsToMany(Student::class);
 		// tengo que crear esta como son relaiones de muchos a muchos voy al modelo Student y creo otro metodo
 		// que es la relacion de students con courses
 	}
 
-	public function teacher () {
+	public function teacher()
+	{
 		return $this->belongsTo(Teacher::class);
 	}
 }
