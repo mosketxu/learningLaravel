@@ -2,12 +2,12 @@
 
 {{-- {{dd($courses)}} --}}
 
-{{-- @section('jumbotron')
+@section('jumbotron')
     @include('partials.jumbotron', [
         "title" => __("Accede a cualquier curso de inmediato"),
         "icon" => "th"
     ])
-@endsection --}}
+@endsection
 
 @section('content')
 <div class="pl-5 pr-5">
