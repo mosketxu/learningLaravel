@@ -46,12 +46,13 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    protected static function boot () {
-		parent::boot();
-		static::creating(function (User $user) {
-			if( ! \App::runningInConsole()) {
-				$user->slug = str_slug($user->name . " " . $user->last_name, "-");
-			}
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function (User $user) {
+            if (!\App::runningInConsole()) {
+                $user->slug = str_slug($user->name . " " . $user->last_name, "-");
+            }
         });
     }
 
@@ -73,19 +74,28 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    public function role () {
-    	return $this->belongsTo(Role::class);
+    public static function navigation()
+    {
+        return auth()->check() ? auth()->user()->role->name : 'guest';
     }
 
-    public function student () {
-    	return $this->hasOne(Student::class);
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 
-    public function teacher () {
-    	return $this->hasOne(Teacher::class);
+    public function student()
+    {
+        return $this->hasOne(Student::class);
     }
 
-    public function socialAccount () {
-    	return $this->hasOne(UserSocialAccount::class);
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class);
+    }
+
+    public function socialAccount()
+    {
+        return $this->hasOne(UserSocialAccount::class);
     }
 }
